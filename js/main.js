@@ -63,4 +63,99 @@ if (!customElements.get('jamiphy-header')) {
 }
 if (!customElements.get('jamiphy-footer')) {
   customElements.define('jamiphy-footer', JamiphyFooter);
-} 
+}
+
+// ------------- Synthwave Horizon Grid -------------
+function initSynthwave() {
+  const hero = document.querySelector('.hero');
+  if (!hero) return;
+
+  // Inject & style canvas
+  const canvas = document.createElement('canvas');
+  canvas.id = 'synthwave-canvas';
+  canvas.style.position = 'absolute';
+  canvas.style.inset = '0';
+  canvas.style.width = '100%';
+  canvas.style.height = '100%';
+  canvas.style.zIndex = '0';
+  hero.style.position = 'relative';
+  hero.prepend(canvas);
+
+  // Ensure existing hero content layers above canvas
+  hero.querySelectorAll(':scope > *:not(canvas)').forEach(el => {
+    const style = getComputedStyle(el);
+    if (style.position === 'static') {
+      el.style.position = 'relative';
+    }
+    el.style.zIndex = '1';
+  });
+
+  const ctx = canvas.getContext('2d');
+  let width, height, dpr;
+
+  function resize() {
+    dpr = window.devicePixelRatio || 1;
+    width = canvas.clientWidth; // css pixels
+    height = canvas.clientHeight; // css pixels
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  // Scene constants
+  const rowCount = 40;
+  const colSpacing = 80;
+  let offset = 0;
+
+  function draw() {
+    const horizon = height / 2;
+    ctx.clearRect(0, 0, width, height);
+
+    // Background gradient (dark top -> deep purple bottom)
+    const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
+    bgGrad.addColorStop(0, '#06040f');
+    bgGrad.addColorStop(1, '#12002f');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, width, height);
+
+    // Grid
+    ctx.lineWidth = 1;
+    const gridColor = 'rgba(192, 132, 252, 0.7)'; // neon-purple
+    ctx.strokeStyle = gridColor;
+
+    // Horizontal lines with perspective
+    for (let i = 1; i < rowCount; i++) {
+      const progress = (i + offset) / rowCount;
+      const y = horizon + Math.pow(progress, 2.5) * (height - horizon);
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(width, y);
+      ctx.stroke();
+    }
+
+    // Vertical lines converging to vanishing point
+    for (let i = -Math.ceil(width / colSpacing); i <= Math.ceil(width / colSpacing); i++) {
+      const x = width / 2 + i * colSpacing;
+      ctx.beginPath();
+      ctx.moveTo(x, height);
+      ctx.lineTo(width / 2, horizon);
+      ctx.stroke();
+    }
+
+    // Animate offset for scrolling effect
+    offset += 0.03;
+    if (offset > 1) offset -= 1;
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// Initialise synthwave on DOM ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initSynthwave);
+} else {
+  initSynthwave();
+}
