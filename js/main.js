@@ -38,7 +38,7 @@ class JamiphyHeader extends HTMLElement {
           <a href="/about/" class="block px-3 py-2 rounded-md text-base font-medium hover:text-purple-300">About</a>
           <a href="/contact/" class="block px-3 py-2 rounded-md text-base font-medium hover:text-purple-300">Contact</a>
           <!-- Mobile theme toggle -->
-          <button data-theme-toggle class="theme-toggle w-full text-left" aria-label="Toggle theme">
+          <button data-theme-toggle class="theme-toggle ml-3 my-2" aria-label="Toggle theme">
             <span class="theme-icon">🖥</span>
           </button>
         </div>
@@ -193,11 +193,10 @@ function getStoredTheme() {
 /** Apply theme to <html> element */
 function applyTheme(theme) {
   const root = document.documentElement;
-  if (theme === 'dark') {
-    root.setAttribute('data-theme', 'dark');
-  } else {
-    // For both light + system we remove explicit attribute so CSS & media query can decide
+  if (theme === 'system') {
     root.removeAttribute('data-theme');
+  } else {
+    root.setAttribute('data-theme', theme);
   }
 
   // Update icons in all toggle buttons
