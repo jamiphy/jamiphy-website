@@ -11,16 +11,52 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 /* 2. CSS variables for easy theming */
+
+/* Light theme (default) */
 :root {
+  --retro-bg: #f8f9fb;        /* light paper */
+  --retro-fg: #4c1d95;        /* deep purple text */
+  --retro-accent: #7c3aed;    /* violet accent */
+  --retro-dim: #e5e7eb;       /* light gray for nav/footer */
+  --retro-purple: #7c3aed;
+  --retro-green: #059669;
+  --retro-pink:  #db2777;
+  --retro-cyan:  #0891b2;
+  --retro-yellow:#f59e0b;
+  --scanline-color: rgba(0, 0, 0, 0.15); /* scanlines for light bg */
+  --hero-overlay: rgba(255, 255, 255, 0.85);
+}
+
+/* Explicit dark theme (matches original colours) */
+:root[data-theme="dark"] {
   --retro-bg: #0d0d0d;        /* deep CRT black */
-  --retro-fg: #c084fc;        /* primary purple */
+  --retro-fg: #c084fc;        /* primary neon purple */
   --retro-accent: #ff66ff;    /* pink accent */
   --retro-dim: #1a1a1a;       /* slightly lighter black for nav/footer */
   --retro-purple: #c084fc;
-  --retro-green: #33ff33;     /* kept for alt gradient step */
+  --retro-green: #33ff33;
   --retro-pink:  #ff66ff;
   --retro-cyan:  #00ffff;
   --retro-yellow:#ffff66;
+  --scanline-color: rgba(255, 255, 255, 0.15); /* more visible white scanlines for dark bg */
+  --hero-overlay: rgba(0, 0, 0, 0.65);
+}
+
+/* Follow user OS preference when no explicit data-theme attribute present */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --retro-bg: #0d0d0d;
+    --retro-fg: #c084fc;
+    --retro-accent: #ff66ff;
+    --retro-dim: #1a1a1a;
+    --retro-purple: #c084fc;
+    --retro-green: #33ff33;
+    --retro-pink:  #ff66ff;
+    --retro-cyan:  #00ffff;
+    --retro-yellow:#ffff66;
+    --scanline-color: rgba(255, 255, 255, 0.15);
+    --hero-overlay: rgba(0, 0, 0, 0.65);
+  }
 }
 
 /* 3. Global reset tweaks */
@@ -130,8 +166,8 @@ footer {
       to bottom,
       rgba(0, 0, 0, 0) 0,
       rgba(0, 0, 0, 0) 2px,
-      rgba(0, 0, 0, 0.15) 3px,
-      rgba(0, 0, 0, 0.15) 4px
+      var(--scanline-color) 3px,
+      var(--scanline-color) 4px
   );
   pointer-events: none;
 }
@@ -213,4 +249,39 @@ textarea:focus {
 /* Nav link hover multi-colour */
 nav a:hover {
   animation: rainbow 4s linear infinite;
+}
+
+/* 14. Theme toggle button */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid var(--retro-fg);
+  border-radius: 0.25rem;
+  color: var(--retro-fg);
+  background: transparent;
+  transition: background 0.25s ease, color 0.25s ease, transform 0.25s ease;
+}
+
+.theme-toggle:hover,
+.theme-toggle:focus {
+  background: var(--retro-fg);
+  color: var(--retro-bg);
+  transform: scale(1.05);
+}
+
+.theme-toggle:active {
+  transform: scale(0.95);
+}
+
+/* Readability panel behind hero copy */
+.hero-content {
+  background: var(--hero-overlay);
+  padding: 2rem 1rem;
+  border: 2px solid var(--retro-fg);
+  backdrop-filter: blur(3px);
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+  display: block;
 } 

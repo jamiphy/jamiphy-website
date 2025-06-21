@@ -1,5 +1,9 @@
 /* main.js - Jamiphy web components & site-wide JS */
 
+// ---------------- Theme constants (placed first so they're initialised before any callbacks run) -------------
+const THEME_KEY = 'jamiphy-theme'; // localStorage key
+const THEMES = ['light', 'dark', 'system'];
+
 class JamiphyHeader extends HTMLElement {
   connectedCallback() {
     this.innerHTML = `
@@ -8,10 +12,14 @@ class JamiphyHeader extends HTMLElement {
           <div class="flex items-center justify-between h-16">
             <div class="flex items-center">
               <a href="/" class="logo text-xl">Jamiphy</a>
-              <div class="hidden md:block ml-10 space-x-4">
+              <div class="hidden md:block ml-10 space-x-4 items-center">
                 <a href="/" class="px-3 py-2 rounded-md text-xs sm:text-sm font-medium hover:text-purple-300">Home</a>
                 <a href="/about/" class="px-3 py-2 rounded-md text-xs sm:text-sm font-medium hover:text-purple-300">About</a>
                 <a href="/contact/" class="px-3 py-2 rounded-md text-xs sm:text-sm font-medium hover:text-purple-300">Contact</a>
+                <!-- Desktop theme toggle -->
+                <button data-theme-toggle class="theme-toggle" aria-label="Toggle theme">
+                  <span class="theme-icon">🖥</span>
+                </button>
               </div>
             </div>
             <!-- Mobile menu button -->
@@ -29,6 +37,10 @@ class JamiphyHeader extends HTMLElement {
           <a href="/" class="block px-3 py-2 rounded-md text-base font-medium hover:text-purple-300">Home</a>
           <a href="/about/" class="block px-3 py-2 rounded-md text-base font-medium hover:text-purple-300">About</a>
           <a href="/contact/" class="block px-3 py-2 rounded-md text-base font-medium hover:text-purple-300">Contact</a>
+          <!-- Mobile theme toggle -->
+          <button data-theme-toggle class="theme-toggle w-full text-left" aria-label="Toggle theme">
+            <span class="theme-icon">🖥</span>
+          </button>
         </div>
       </nav>
     `;
@@ -42,6 +54,9 @@ class JamiphyHeader extends HTMLElement {
         mobileMenu.classList.toggle('hidden');
       });
     }
+
+    // Attach toggle handler after markup is injected
+    initThemeToggles(this);
   }
 }
 
@@ -113,16 +128,23 @@ function initSynthwave() {
     const horizon = height / 2;
     ctx.clearRect(0, 0, width, height);
 
-    // Background gradient (dark top -> deep purple bottom)
-    const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
-    bgGrad.addColorStop(0, '#06040f');
-    bgGrad.addColorStop(1, '#12002f');
-    ctx.fillStyle = bgGrad;
+    const theme = currentEffectiveTheme();
+
+    if (theme === 'dark') {
+      // Background gradient (dark top -> deep purple bottom)
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
+      bgGrad.addColorStop(0, '#06040f');
+      bgGrad.addColorStop(1, '#12002f');
+      ctx.fillStyle = bgGrad;
+    } else {
+      // Light theme – plain white background
+      ctx.fillStyle = '#ffffff';
+    }
     ctx.fillRect(0, 0, width, height);
 
     // Grid
     ctx.lineWidth = 1;
-    const gridColor = 'rgba(192, 132, 252, 0.7)'; // neon-purple
+    const gridColor = theme === 'dark' ? 'rgba(192, 132, 252, 0.7)' : 'rgba(124, 58, 237, 0.4)'; // adjust opacity against white
     ctx.strokeStyle = gridColor;
 
     // Horizontal lines with perspective
@@ -158,4 +180,62 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initSynthwave);
 } else {
   initSynthwave();
+}
+
+// ---------------- Theme management (helpers) ----------------
+
+/** Read saved theme or fallback to system */
+function getStoredTheme() {
+  const t = localStorage.getItem(THEME_KEY);
+  return THEMES.includes(t) ? t : 'system';
+}
+
+/** Apply theme to <html> element */
+function applyTheme(theme) {
+  const root = document.documentElement;
+  if (theme === 'dark') {
+    root.setAttribute('data-theme', 'dark');
+  } else {
+    // For both light + system we remove explicit attribute so CSS & media query can decide
+    root.removeAttribute('data-theme');
+  }
+
+  // Update icons in all toggle buttons
+  document.querySelectorAll('[data-theme-toggle] .theme-icon').forEach(iconEl => {
+    if (theme === 'light') iconEl.textContent = '☀️';
+    else if (theme === 'dark') iconEl.textContent = '🌙';
+    else iconEl.textContent = '🖥';
+  });
+}
+
+/** Cycle to the next theme in order light → dark → system → light */
+function nextTheme(current) {
+  const idx = THEMES.indexOf(current);
+  return THEMES[(idx + 1) % THEMES.length];
+}
+
+/** Initialise theme toggles within a root element */
+function initThemeToggles(root) {
+  const buttons = root.querySelectorAll('[data-theme-toggle]');
+  if (!buttons.length) return;
+
+  let currentTheme = getStoredTheme();
+  applyTheme(currentTheme);
+
+  buttons.forEach(btn => {
+    btn.style.cursor = 'pointer';
+    btn.addEventListener('click', () => {
+      currentTheme = nextTheme(currentTheme);
+      localStorage.setItem(THEME_KEY, currentTheme);
+      applyTheme(currentTheme);
+    });
+  });
+}
+
+// ------------- Helper for theme inside canvas -------------
+
+function currentEffectiveTheme() {
+  const explicit = document.documentElement.getAttribute('data-theme');
+  if (explicit) return explicit; // currently only "dark"
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
