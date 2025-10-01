@@ -18,16 +18,14 @@ class JamiphyHeader extends HTMLElement {
                 <a href="/contact/" class="px-3 py-2 rounded-md text-xs sm:text-sm font-medium hover:text-purple-300">Contact</a>
                 <!-- Desktop theme toggle -->
                 <button data-theme-toggle class="theme-toggle" aria-label="Toggle theme">
-                  <span class="theme-icon">🖥</span>
+                  <span class="material-symbols-rounded theme-icon">desktop_windows</span>
                 </button>
               </div>
             </div>
             <!-- Mobile menu button -->
             <div class="md:hidden">
               <button id="nav-toggle" class="text-gray-300 hover:text-white focus:outline-none focus:text-white">
-                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
+                <span class="material-symbols-rounded">menu</span>
               </button>
             </div>
           </div>
@@ -39,7 +37,7 @@ class JamiphyHeader extends HTMLElement {
           <a href="/contact/" class="block px-3 py-2 rounded-md text-base font-medium hover:text-purple-300">Contact</a>
           <!-- Mobile theme toggle -->
           <button data-theme-toggle class="theme-toggle ml-3 my-2" aria-label="Toggle theme">
-            <span class="theme-icon">🖥</span>
+            <span class="material-symbols-rounded theme-icon">desktop_windows</span>
           </button>
         </div>
       </nav>
@@ -199,11 +197,11 @@ function applyTheme(theme) {
     root.setAttribute('data-theme', theme);
   }
 
-  // Update icons in all toggle buttons
+  // Update icons in all toggle buttons (Material Symbols tokens)
   document.querySelectorAll('[data-theme-toggle] .theme-icon').forEach(iconEl => {
-    if (theme === 'light') iconEl.textContent = '☀️';
-    else if (theme === 'dark') iconEl.textContent = '🌙';
-    else iconEl.textContent = '🖥';
+    if (theme === 'light') iconEl.textContent = 'light_mode';
+    else if (theme === 'dark') iconEl.textContent = 'dark_mode';
+    else iconEl.textContent = 'desktop_windows';
   });
 }
 
