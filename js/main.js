@@ -12,10 +12,10 @@ class JamiphyHeader extends HTMLElement {
           <div class="flex items-center justify-between h-16">
             <div class="flex items-center">
               <a href="/" class="logo text-xl">Jamiphy</a>
-              <div class="hidden md:block ml-10 space-x-4 items-center">
-                <a href="/" class="px-3 py-2 rounded-md text-xs sm:text-sm font-medium hover:text-purple-300">Home</a>
-                <a href="/about/" class="px-3 py-2 rounded-md text-xs sm:text-sm font-medium hover:text-purple-300">About</a>
-                <a href="/contact/" class="px-3 py-2 rounded-md text-xs sm:text-sm font-medium hover:text-purple-300">Contact</a>
+              <div class="hidden md:flex ml-10 items-center space-x-4 h-16">
+                <a href="/" class="px-3 rounded-md text-xs sm:text-sm font-medium hover:text-purple-300 h-full flex items-center">Home</a>
+                <a href="/about/" class="px-3 rounded-md text-xs sm:text-sm font-medium hover:text-purple-300 h-full flex items-center">About</a>
+                <a href="/contact/" class="px-3 rounded-md text-xs sm:text-sm font-medium hover:text-purple-300 h-full flex items-center">Contact</a>
                 <!-- Desktop theme toggle -->
                 <button data-theme-toggle class="theme-toggle" aria-label="Toggle theme">
                   <span class="material-symbols-rounded theme-icon">desktop_windows</span>
